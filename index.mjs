@@ -21,9 +21,15 @@ const OUTCOME = ["Alice wins", "Draw", "Bob Wins"];
 
 const common = (who) => ({
   ...stdlib.hasRandom,
-  pickFinger: () => {
+  pickFinger: async () => {
     const hand = Math.floor(Math.random() * Hand.length);
     console.log(`${who} picked ${Hand[hand]}`);
+    if (Math.random() <= 0.01) {
+      for (let i = 0; i < 10; i++) {
+        console.log(`${who} takes their sweet time sending it back`);
+        await stdlib.wait(1);
+      }
+    }
     return hand;
   },
   guessResult: () => {
@@ -37,6 +43,12 @@ const common = (who) => ({
   informTimeout: () => {
     console.log(`${who} observed a timeout`);
   },
+  roundWinner: (outcome) => {
+    console.log(`This round ${OUTCOME[outcome]}`);
+  },
+  endGame: () => {
+    console.log(`Round ends`);
+  },
 });
 
 await Promise.all([
@@ -47,15 +59,8 @@ await Promise.all([
   }),
   ctcBob.p.Bob({
     ...common("Bob"),
-    acceptWager: async (amt) => {
-      if (Math.random() <= 0.5) {
-        for (let i = 0; i < 10; i++) {
-          console.log(`Bob takes his sweet time`);
-          await stdlib.wait(1);
-        }
-      } else {
-        console.log(`Bob accept the wager ${fmt(amt)}`);
-      }
+    acceptWager: (amt) => {
+      console.log(`Bob accept the wager ${fmt(amt)}`);
     },
   }),
 ]);
