@@ -70,6 +70,7 @@ const common = {
   guessResult: Fun([], UInt),
   seeOutcome: Fun([UInt], Null),
   informTimeout: Fun([], Null),
+  seeWinning: Fun([UInt], Null),
   roundWinner: Fun([UInt], Null),
   endGame: Fun([], Null),
 };
@@ -172,12 +173,16 @@ export const main = Reach.App(() => {
         bobGuessResult
       );
 
-      Alice.interact.roundWinner(outcome);
+      each([Alice, Bob], () => {
+        interact.roundWinner(outcome);
+        const winningNum = aliceFinger + bobFinger;
+        interact.seeWinning(winningNum);
+      });
 
       [forAlice, forBob, round] =
         outcome == 0
           ? [forAlice + 2, forBob + 0, round + 1]
-          : outcome == 0
+          : outcome == 2
           ? [forAlice + 0, forBob + 2, round + 1]
           : [forAlice + 1, forBob + 1, round + 1];
       continue;
